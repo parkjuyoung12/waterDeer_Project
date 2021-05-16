@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+ <mapper namespace="com.water.mybatis.MemberMapper.xml">
+ 
+ 	<select id="getMember" parameterType="string" resultType="member" >
+ 	<![CDATA[
+		SELECT * FROM uni_member WHERE member_id = #{member_id}
+ 	]]>
+ 	</select>
+
+ 	<select id="loginMember" parameterType="member" resultType="member" >
+ 	<![CDATA[
+		SELECT * FROM uni_member WHERE member_id = #{member_id} AND member_pw = #{member_pw}
+ 	]]>
+ 	</select>
+
+ 	<insert id="joinMember" parameterType="member">
+ 	<![CDATA[
+ 		INSERT INTO uni_member(
+	 				member_id, member_pw, member_numb , member_name, member_age, member_gender
+				    , member_position, member_join_date, member_gradu_date, member_grade, dept_code
+				    , credit_ref_code, member_minor, member_dual_major, member_birth
+				) 
+	 	VALUES (#{member_id}, #{member_pw}, #{member_numb} , #{member_name}, #{member_age}, #{member_gender}
+			    , #{member_position}, TO_DATE(#{member_join_date}, 'yyyy-mm-dd'), NULL, #{member_grade}, #{dept_code}
+			    , #{credit_ref_code}, #{member_minor}, #{member_dual_major}, TO_DATE(#{member_birth}, 'yyyy-mm-dd'))
+ 	]]>
+ 	</insert>
+ 	
+ 	<!-- 프로필 변경  -->
+ 	<update id="member_update" parameterType="member">
+ 	<![CDATA[
+ 		UPDATE uni_member(
+	 				 member_pw
+				)
+		SET number_pw = #{number_pw}
+	 	WHERE number_pw = #{number_pw}
+ 	]]>
+ 	</update>
+ 	
+ 	
+ 	
+ </mapper>

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.water.mybatis.BoardMapper.xml">
+
+	<!-- 페이징 처리 -->
+	<select id="getNoticeOf" resultType="noticeBoard"
+		parameterType="map">
+	<![CDATA[
+		SELECT *
+		FROM ( 	SELECT  *
+				FROM notice_board
+				WHERE course_code = #{course_code}
+				ORDER BY indate DESC )
+		WHERE ROWNUM BETWEEN #{first_rownum} and #{last_rownum}
+ 	]]>
+	</select>
+
+	<select id="getCourseOfBoard" parameterType="int"
+		resultType="string">
+		SELECT course_code
+		FROM notice_board
+		WHERE num = #{num}
+	</select>
+
+	<select id="selectNoticeList" parameterType="string"
+		resultType="noticeBoard">
+		SELECT num, INDATE, IMG_PATH , TITLE, CONTENT, IMG_NAME, COURSE_CODE, READ_COUNT
+		FROM 	notice_board
+		WHERE 	COURSE_CODE=#{course_code}
+	</select>
+	
+	<select id="selectNoticeMainView" parameterType="noticeBoard" resultType="noticeBoard">
+		SELECT	title
+		FROM 	notice_board
+		WHERE 	num = #{num}
+	</select>
+
+	<!-- FIXME 해당하는 강좌의 게시글 목록만 뜨도록 -->
+	<select id="selectqnaList" parameterType="qnaBoard" resultType="qnaBoard">
+		SELECT	n.*, m.member_name
+		FROM    qna_board n, uni_member m
+		WHERE      n.member_id = m.member_id
+		AND   n.course_code = #{course_code}
+	</select>
+
+	<select id="selectNoticeView" parameterType="noticeBoard" resultType="noticeBoard">
+		SELECT	n.num, n.indate, n.title, m.member_name, n.read_count, n.content
+		FROM 	notice_board n, uni_member m
+		WHERE 	n.num = #{num}
+			AND m.member_id = ( SELECT p.prof_id
+								FROM 	tb_prof_course p
+								WHERE COURSE_CODE = #{course_code} )
+	</select>
+
+	<select id="selectqnaView" parameterType="int" resultType="qnaBoard">
+		SELECT	n.*, m.member_name
+		FROM qna_board n, uni_member m
+		WHERE 	  n.member_id = m.member_id
+        AND n.num = #{num}
+	</select>
+
+	
+
+	<!-- 공지 글 등록 -->
+	<insert id="insertNotice" parameterType="noticeBoard">
+	    INSERT INTO notice_board  (
+	        num, INDATE, IMG_PATH , TITLE, CONTENT, IMG_NAME, COURSE_CODE, READ_COUNT
+	    )
+	    VALUES (
+	        seq_notice_board.NEXTVAL
+	        , SYSDATE
+	        , #{img_path, jdbcType=VARCHAR}
+	        , #{title}
+	        , #{content}
+	        , #{img_name, jdbcType=VARCHAR}
+	        , #{course_code}
+	        , 0
+	    )
+	</insert>
+
+	<update id="updateNotice" parameterType="noticeBoard">
+		UPDATE notice_board
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="img_path != null">img_path=#{img_path},</if>
+			<if test="title != null">title=#{title},</if>
+			<if test="content != null">content=#{content},</if>
+			<if test="img_name != null">img_name=#{img_name},</if>
+		</trim>
+		WHERE num = #{num}
+	</update>
+	
+	<!-- 질문상세 -->
+	<update id="updateQna" parameterType="qnaBoard"> 
+		UPDATE qna_board
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="img_path != null">img_path=#{img_path},</if>
+			<if test="title != null">title=#{title},</if>
+			<if test="content != null">content=#{content},</if>
+			<if test="img_name != null">img_name=#{img_name},</if>
+		</trim>
+		WHERE num = #{num}
+	</update>
+	
+	<!-- 질문 수정 -->
+	<update id="updateToQna" parameterType="qnaBoard"> 
+		UPDATE qna_board
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="img_path != null">img_path=#{img_path},</if>
+			<if test="title != null">title=#{title},</if>
+			<if test="content != null">content=#{content},</if>
+			<if test="img_name != null">img_name=#{img_name},</if>
+		</trim>
+		WHERE num = #{num}
+	</update>
+	
+	
+	<delete id="deleteNotice" parameterType="int">
+		DELETE FROM 	notice_board
+		WHERE 			num = #{num}
+	</delete>
+	
+	<delete id="deleteQna" parameterType="int">
+		DELETE FROM qna_board
+		WHERE 		num = #{num}
+	</delete>
+	
+	<insert id="insertqna" parameterType="qnaBoard">
+	    INSERT INTO qna_board  (
+	        num, INDATE, IMG_PATH , TITLE, CONTENT, IMG_NAME, COURSE_CODE, READ_COUNT, member_id
+	    )
+	    VALUES (
+	        seq_qna_board.NEXTVAL
+	        , SYSDATE
+	        , #{img_path, jdbcType=VARCHAR}
+	        , #{title}
+	        , #{content}
+	        , #{img_name, jdbcType=VARCHAR}
+	        , #{course_code}
+	        , 0
+	        , #{member_id}
+	    )
+	</insert>
+	
+	<select id="selectcredit" parameterType="int" resultType="qnaBoard">
+		SELECT  c.subj_grade, c.course_code, pc_m.prof_name
+		FROM    tb_stud_couse c, (
+            SELECT pc.course_code, m.member_name "prof_name"
+            FROM tb_prof_course pc, uni_member m
+            WHERE pc.prof_id = m.member_id
+            ) pc_m
+		WHERE   c.course_code = pc_m.course_code
+        AND c.member_id = #{member_id}
+	</select>
+	
+
+</mapper>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+  
+<configuration>
+	<properties resource="com/water/mybatis/db.properties" />
+	
+	<typeAliases>
+		<typeAlias type="com.water.dto.MemberDTO" alias="member"/>
+		<typeAlias type="com.water.dto.NoticeBoardDTO" alias="noticeBoard"/>
+		<typeAlias type="com.water.dto.NoticeReplyDTO" alias="noticeReply"/>
+		<typeAlias type="com.water.dto.QnaBoardDTO" alias="qnaBoard"/>
+		<typeAlias type="com.water.dto.CourseDTO" alias="course"/>
+		<typeAlias type="com.water.dto.RoomDTO" alias="room"/>
+	</typeAliases>
+	
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC" />
+			<dataSource type="POOLED">
+				<property name="driver" value="${driver}" />
+				<property name="url" value="${url}" />
+				<property name="username" value="${username}" />
+				<property name="password" value="${password}" />
+			</dataSource>
+		</environment>
+	</environments>
+	
+	
+	<mappers>
+		<mapper resource="com/water/mybatis/MemberMapper.xml" />
+		<mapper resource="com/water/mybatis/BoardMapper.xml" />
+		<mapper resource="com/water/mybatis/CourseMapper.xml" />
+	</mappers>
+	
+</configuration>
